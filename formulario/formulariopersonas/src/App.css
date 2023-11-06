@@ -1,0 +1,138 @@
+
+
+html {
+  scroll-behavior: smooth;
+  
+}
+header {
+  background-color: #494949;
+  height: 80px;
+  
+
+}
+
+.navbar {
+  height: inherit;
+
+  background-color: #494949;
+  
+  
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+.advertencia {
+  height: 1rem;
+}
+.fondo-datos {
+  
+  color: black;
+}
+footer {
+  height: 215px;
+  
+  color: white;
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+div a {
+  text-decoration: none;
+  color: white;
+}
+.logo {
+  width: 190px;
+  height: 70px;
+}
+
+.formulario-datos {
+  max-width: 30rem;
+  
+  margin: 0 auto;
+}
+.titulo-añadir {
+  max-width: 50rem !important;
+  display: block;
+  margin: 0 auto;
+  background-color: rgb(250, 235, 28);
+}
+.fondo-registro, .fondo-index {
+  background: #ECECEC;  /* fallback for old browsers */
+  
+
+
+}
+
+.titulo-white {
+  color: rgb(0, 0, 0);
+}
+.titulo-white::after {
+  margin-top: 12px;
+  display: flex;
+  content: '';
+  border: 1px solid white;
+}
+
+.link:hover {
+  color: yellow;
+}
+.titulo-tabla:hover {
+  color: yellow;
+}
+.contraseña-container {
+  position: relative;
+  width: 100%;
+  display: inline-block;
+}
+
+.contraseña-container .icon {
+  position: absolute;
+  top: 55%;
+  right: 10px; /* Ajusta la posición del ícono */
+  transform: translateY(-50%);
+  cursor: pointer;
+ 
+}
+.contraseña-container .icon svg {
+  font-size: 16px; /* Ajusta el tamaño del ícono*/
+  color: #888; /* Ajusta el color del ícono*/
+}
+
+@keyframes escalar {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes parpadeo {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.animacion-i:hover i { /*Animacion personalizada para el parpadeo de los iconos sun y moon de la tabla*/
+  color: red;
+  animation: parpadeo 0.5s linear infinite;
+}
+.animacion-boton:hover {
+  
+  transform: scale(1.05);
+}
+.animacion-i:hover th { /*Animacion personalizada para el parpadeo de los iconos sun y moon de la tabla*/
+  
+  animation: parpadeo 0.5s linear infinite;
+}
+.estilo-boton {
+  background: red;
+}
