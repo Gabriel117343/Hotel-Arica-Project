@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-unused-vars */
-import { getUsuario, updateUsuario } from '../api/persona.api'
 import { Link, useLocation, useParams, useNavigate } from 'react-router-dom'
-import { useEffect, useState, useRef, useId } from 'react'
+import { useEffect, useState, useRef, useId, useContext } from 'react'
 
 import { toast } from 'react-hot-toast'
 import '../App.css'
@@ -12,21 +11,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // icono eye
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 // debounce retrasara le ejecucion de validarTerminos para reducir la cantidad de veces que se ejecute
 import debounce from 'lodash/debounce'
-
+import { UsuarioContext } from '../context/UsuarioContext'
 export const FormEditar = () => {
   // Accediendo al valor :id de la ruta /editar/<id>, id del usuario a buscar
   const params = useParams()
 
   const [isBtnDisabled, setIsBtnDisabled] = useState(true)
   const [mostrarPassword, setMostrarPassword] = useState(false)
-  const [usuarioBusca, setUsuarioBusca] = useState([])
 
-  // Obteniendo la lista de usuarios enviada en TablaUsuarios: navigate(`/admin/editar/${id}`, {state: {listaUsuarios: usuarios} });
-  const { state } = useLocation()
-  const usuarios = state.listaUsuarios
-
+  const { state, usuarioSeleccionado, modificarUsuario } = useContext(UsuarioContext)
   // Creando un id para los inputs
-
   const idEditAdmin = useId()
 
   // navegacion
@@ -56,10 +50,8 @@ export const FormEditar = () => {
   }
 
   const validarCorreoRepetido = (correo) => {
-    console.log(correo)
-
     // busca si el correo ya fue registrado con algun usuario
-    const correoValidado = usuarios.find(co => co.correo === correo)
+    const correoValidado = state.usuarios.find(co => co.correo === correo)
     return new Promise((resolve, reject) => { // Uso de promesas
       if (correoValidado) {
         // retorna el error
@@ -79,8 +71,7 @@ export const FormEditar = () => {
     const { rut, nombre, apellido, telefono, correo, contraseña, jornada, estado_activo } = usuario // desestructura el objeto usuario para obtener los datos del usuario
 
     usuario.estado_activo = usuario.estado_activo === 'on' // si el checkbox esta activo sera true si no false
-    const use = usuarioBusca // usuario buscar son los datos del usuario encontrado
-
+    const use = state.usuarioSeleccionado // usuario buscar son los datos del usuario encontrado
     // Esto sirve para que mantenga el rut original si no se modifica
     // Evitara que de un error donde el rut sea igual al de otro usuario
     if (use.nombre === nombre && use.apellido === apellido && use.telefono === telefono && use.correo === correo && use.contraseña === contraseña && use.estado_activo === estado_activo && use.jornada === jornada) {
@@ -92,15 +83,14 @@ export const FormEditar = () => {
 
     try {
       // si el correo seguira siendo el mismo no llamara a la funcion para validar el correo repetido
-      if (correo === usuarioBusca.correo) {
-        await updateUsuario(params.id, usuario)
-        toast.success('Usuario editado!', { duration: 3000 })
+      if (correo === use.correo) {
+        modificarUsuario(params.id, usuario)
         navigate('/admin/admin-registro-usuarios')// redirige atras al finalizar el await
         return
       }
 
       await validarCorreoRepetido(correo)
-      await updateUsuario(params.id, usuario)
+      modificarUsuario(params.id, usuario)
       // Muestra un mensaje de éxito
       toast.success('Usuario editado!', { duration: 3000 })
       navigate('/admin/admin-registro-usuarios')// redirige atras al finalizar el await
@@ -112,16 +102,6 @@ export const FormEditar = () => {
       toast.error('No se pudo Editar el usuario: ' + error.message, { duration: 4000 })
     }
   }
-
-  useEffect(() => {
-    async function obtenerUsuario (id) {
-      const us = await getUsuario(id) // Obtener un Usuario especifico del backEnd atravez de su - id -
-      console.log(us)
-      setUsuarioBusca(us.data)
-    }
-
-    obtenerUsuario(params.id)
-  }, [])
 
   const validarEstadoBoton = () => {
     setIsBtnDisabled(true)
@@ -185,14 +165,14 @@ export const FormEditar = () => {
                 <label htmlFor={`${idEditAdmin}-rut`}>Rut</label>
                 <input
                   className='form-control' type='text'
-                  defaultValue={usuarioBusca.rut} readOnly id={`${idEditAdmin}-rut`} name='rut'
+                  defaultValue={state.usuarioSeleccionado.rut} readOnly id={`${idEditAdmin}-rut`} name='rut'
                 />
               </div>
               <div className='form-group'>
                 <label htmlFor={`${idEditAdmin}-nombre`}>Nombre</label>
                 <input
                   ref={nombreRef} onChange={e => debounce_handleOnChange('nombre', e.target.value, claseInput1)} type='text' className={`form-control text-capitalize ${claseInput1.clase}`}
-                  placeholder='Nombres' defaultValue={usuarioBusca.nombre} id={`${idEditAdmin}-nombre`} name='nombre'
+                  placeholder='Nombres' defaultValue={state.usuarioSeleccionado.nombre} id={`${idEditAdmin}-nombre`} name='nombre'
                 />
                 <div className='advertencia'>
                   <p className='d-block text-danger m-0'>{claseInput1.advertencia}</p>
@@ -204,7 +184,7 @@ export const FormEditar = () => {
                 <label htmlFor={`${idEditAdmin}-apellido`}>Apellido</label>
                 <input
                   ref={apellidoRef} onChange={e => debounce_handleOnChange('apellido', e.target.value, claseInput2)} type='text' className={`form-control text-capitalize ${claseInput2.clase}`}
-                  placeholder='Apellidos' defaultValue={usuarioBusca.apellido} id={`${idEditAdmin}-apellido`} name='apellido'
+                  placeholder='Apellidos' defaultValue={state.usuarioSeleccionado.apellido} id={`${idEditAdmin}-apellido`} name='apellido'
                 />
                 <div className='advertencia'>
                   <p className='d-block text-danger m-0'>{claseInput2.advertencia}</p>
@@ -215,7 +195,7 @@ export const FormEditar = () => {
                 <label htmlFor={`${idEditAdmin}-telefono`}>Telefono</label>
                 <input
                   ref={telefonoRef} onChange={e => debounce_handleOnChange('telefono', e.target.value, claseInput3)} type='tel' className={`form-control text-capitalize ${claseInput3.clase}`}
-                  placeholder='Ej: 9 23432303' defaultValue={usuarioBusca.telefono} id={`${idEditAdmin}-telefono`} maxLength={13} name='telefono'
+                  placeholder='Ej: 9 23432303' defaultValue={state.usuarioSeleccionado.telefono} id={`${idEditAdmin}-telefono`} maxLength={13} name='telefono'
                 />
                 <div className='advertencia'>
                   <p className='d-block text-danger m-0'>{claseInput3.advertencia}</p>
@@ -227,7 +207,7 @@ export const FormEditar = () => {
                 <label htmlFor={`${idEditAdmin}-correo`}>Correo</label>
                 <input
                   ref={correoRef} onChange={e => debounce_handleOnChange('correo', e.target.value, claseInput4)} type='email' className={`form-control ${claseInput4.clase}`}
-                  placeholder='Ej: corr.nuevo09@gmail.com' defaultValue={usuarioBusca.correo} id={`${idEditAdmin}-correo`} name='correo'
+                  placeholder='Ej: corr.nuevo09@gmail.com' defaultValue={state.usuarioSeleccionado.correo} id={`${idEditAdmin}-correo`} name='correo'
                 />
 
                 <div className='advertencia'>
@@ -238,7 +218,7 @@ export const FormEditar = () => {
                 <label htmlFor={`${idEditAdmin}-contraseña`}>Contraseña</label>
                 <input
                   ref={contraseñaRef} onChange={e => debounce_handleOnChange('contraseña', e.target.value, claseInput5)} type={mostrarPassword ? 'text' : 'password'} className={`form-control ${claseInput5.clase}`}
-                  defaultValue={usuarioBusca.contraseña} id={`${idEditAdmin}-contraseña`} name='contraseña'
+                  defaultValue={state.usuarioSeleccionado.contraseña} id={`${idEditAdmin}-contraseña`} name='contraseña'
                 />
                 <span className='icon'>
                   <FontAwesomeIcon
@@ -252,15 +232,15 @@ export const FormEditar = () => {
               </div>
               <div className='form-group'>
                 <label htmlFor={`${idEditAdmin}-jornada`}>Jornada</label>
-                <select onChange={validarEstadoBoton} ref={jornadaRef} className='form-control' name='jornada' id={`${idEditAdmin}-jornada`} defaultValue={usuarioBusca.jornada}>
+                <select onChange={validarEstadoBoton} ref={jornadaRef} className='form-control' name='jornada' id={`${idEditAdmin}-jornada`} defaultValue={state.usuarioSeleccionado.jornada}>
 
-                  <option value={usuarioBusca.jornada}>{usuarioBusca.jornada}</option>
-                  <option value={usuarioBusca.jornada === 'vespertino' ? 'duirno' : 'vespertino'}>{usuarioBusca.jornada === 'vespertino' ? 'duirno' : 'vespertino'}</option>
+                  <option value={state.usuarioSeleccionado.jornada}>{state.usuarioSeleccionado.jornada}</option>
+                  <option value={state.usuarioSeleccionado.jornada === 'vespertino' ? 'duirno' : 'vespertino'}>{state.usuarioSeleccionado.jornada === 'vespertino' ? 'duirno' : 'vespertino'}</option>
                 </select>
 
               </div>
               <div className='d-flex mb-3 mt-3'>
-                <input className='form-check-input' onClick={validarEstadoBoton} defaultChecked={usuarioBusca.estado_activo} ref={checkRef} type='checkbox' id={`${idEditAdmin}-estado`} name='estado_activo' />
+                <input className='form-check-input' onClick={validarEstadoBoton} defaultChecked={state.usuarioSeleccionado.estado_activo} ref={checkRef} type='checkbox' id={`${idEditAdmin}-estado`} name='estado_activo' />
                 <p className='ps-2 m-0'>Usuario Activo</p>
               </div>
               <div className='mt-3 d-flex justify-content-between'>

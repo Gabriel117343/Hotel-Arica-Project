@@ -1,24 +1,22 @@
-import React, { useState, useRef, useId } from 'react'
+import React, { useState, useRef, useId, useContext } from 'react'
 import '../App.css'
 
-import confetti from 'canvas-confetti'
 import { useClasesInput } from '../hooks/useClasesInput'// cutom hook para las clases - hook personalizado
 import { useFormatos } from '../hooks/useFormatos'// custom hook para los formatos - hook personalizado
-
-import { createUsuario } from '../api/persona.api' // funciones Crud
 
 import { toast } from 'react-hot-toast' // alertas para la interfaz
 import debounce from 'lodash/debounce' // para optimizar el rendimiento
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // icono eye para usar en input contraseña
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-import { useUsuarios } from '../hooks/useUsuarios'
 
+import { UsuarioContext } from '../context/UsuarioContext' // contexto para todo el arbol de componentes de Administrador
 export const FormAdmin = () => {
   // cambiar el boton en true o false con isBtnDisabled
   const [isBtnDisabled, setIsBtnDisabled] = useState(true)
   const [mostrarContraseña, setMostrarContraseña] = useState(false)
   // 3 Consumir el Contexto, useUsuarios tiene el contexto
-  const { usuarios, refrescarTabla } = useUsuarios()
+
+  const { state, crearUsuario } = useContext(UsuarioContext) // state tiene el estado del contexto, en este caso el estado de la lista de usuarios
   // id para los inputs
   const idFormAdmin = useId()
   // clases que referencias al Hook useClasesInput
@@ -74,7 +72,7 @@ export const FormAdmin = () => {
     // Retorna el resultado de la promesa resolve o reject
 
     return new Promise((resolve, reject) => {
-      const rutValidado = usuarios.find(pe => pe.rut === rut)
+      const rutValidado = state.usuarios.find(pe => pe.rut === rut)
 
       if (rutValidado) {
         // llama a los Hooks personalizados para limpiar todos los campos
@@ -89,7 +87,7 @@ export const FormAdmin = () => {
 
   const validarCorreoRepetido = (correo) => {
     // busca si el correo ya fue registrado con algun usuario
-    const correoValidado = usuarios.find(co => co.correo === correo)
+    const correoValidado = state.usuarios.find(co => co.correo === correo)
     return new Promise((resolve, reject) => {
       if (correoValidado) {
         limpiarCampos()
@@ -110,36 +108,31 @@ export const FormAdmin = () => {
   const registrarPersona = async (event) => {
     event.preventDefault()
     toast.loading('Registrando...', { duration: 2000 })
+    setIsBtnDisabled(true) // Desactiva el boton del formulario
     const persona = Object.fromEntries(new FormData(event.target))// crea un objeto con los datos del formulario, -- esto es javascript puro --
 
     const usuario = quitarCaracteresEspeciales(persona) // quita los caracteres especiales del nombre y apellido
     // const { rut, nombre, apellido, telefono, correo, contraseña, jornada } = persona// destructuring para obtener los valores del objeto persona
-    setIsBtnDisabled(true)
-    setTimeout(async () => {
-      try {
-        // Realizar la operación asincrónica, por ejemplo, crear un usuario
-        await validarRut(usuario.rut)
-        await validarCorreoRepetido(usuario.correo)
-        // Espera a que se cree el usuario antes de seguir
-        await createUsuario(usuario)
-        // Muestra un mensaje de éxito
-        toast.success('Usuario creado!', { duration: 2000 })
+    try {
+      // Realizar la operación asincrónica, por ejemplo, crear un usuario
+      await validarRut(usuario.rut)
+      await validarCorreoRepetido(usuario.correo)
+      setTimeout(() => {
+        crearUsuario(usuario)
         limpiarCampos()
-        confetti()
-        setTimeout(() => {
-          refrescarTabla()
-        }, 2500)
-        window.scrollTo({
-          top: 800,
-          behavior: 'smooth' // Esto activa el desplazamiento suave
-        })
-      } catch (error) {
+      }, 2000)
+      window.scrollTo({
+        top: 800,
+        behavior: 'smooth' // Esto activa el desplazamiento suave
+      })
+    } catch (error) {
+      setTimeout(() => {
         setIsBtnDisabled(true) // Desactiva el boton del formulario
         // Maneja cualquier error que pueda ocurrir durante la operación asincrónica
         // Muestra un mensaje de error si es necesario con el reject - new Error
         toast.error('No se pudo crear el usuario: ' + error.message, { duration: 4000 })
-      }
-    }, 2000)
+      }, 2000)
+    }
     /*
         const rutvalidado = validarRut(rut)
         if (rutvalidado) {

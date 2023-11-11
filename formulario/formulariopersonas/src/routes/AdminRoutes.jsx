@@ -6,10 +6,10 @@ import { PaginaAdminRegistro } from '../pages/PaginaAdminRegistro'
 
 import { NavbarAdmin } from '../views/NavbarAdmin'
 import { Toaster } from 'react-hot-toast'
-
+import { UsuarioProvider } from '../context/UsuarioContext'
 export const AdminRoutes = () => {
   return (
-    <>
+    <UsuarioProvider>
       <NavbarAdmin />
       <Routes>
 
@@ -19,7 +19,6 @@ export const AdminRoutes = () => {
       </Routes>
       <Toaster />
 
-    </>
-
+    </UsuarioProvider>
   )
 }
