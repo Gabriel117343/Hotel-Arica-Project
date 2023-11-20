@@ -11,7 +11,7 @@ export const Index = () => {
           <br />
           <h2>Descripcion</h2>
           <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Amet, consequatur veritatis officia doloribus temporibus ad consequuntur fugiat sunt earum, ex accusamus error dignissimos maxime itaque cupiditate repellat. Corporis, possimus voluptas. Ex harum iste, molestiae enim repellat omnis, fugit aut atque voluptates dolor odio maxime necessitatibus veritatis distinctio quo libero eum possimus delectus qui, facilis molestias ipsam? Neque, amet aut debitis quisquam suscipit animi esse consequatur placeat aliquam. Dignissimos, explicabo officiis.</p>
-          <strong>No hay un footoer!</strong>
+          <strong>Mi Proyecto</strong>
           <br />
           <hr />
           <hr />

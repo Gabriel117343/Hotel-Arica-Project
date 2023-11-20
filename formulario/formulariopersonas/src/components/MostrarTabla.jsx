@@ -22,6 +22,7 @@ export const MostrarTabla = ({ listaPersonas, borrarPersona, edicionUsuario }) =
       <table className='table table-striped mb-0' id='tabla-usuarios'>
         <thead className='border-bottom'>
           <tr>
+            <th>Imagen</th>
             <th>#</th>
             <th>Rut</th>
             <th>Nombre</th>
@@ -37,8 +38,8 @@ export const MostrarTabla = ({ listaPersonas, borrarPersona, edicionUsuario }) =
         <tbody>
           <MagicMotion>
             {usuariosMostrar.map(person => (
-
               <tr key={person.id}>
+                <th><img className='usuario-imagen' src={person.imagen} alt='imagen' /></th>
                 <th>{contador++}</th>
                 <th>{person.rut}</th>
                 <th>{person.nombre}</th>

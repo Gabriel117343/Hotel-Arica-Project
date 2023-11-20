@@ -1,4 +1,7 @@
 from django.db import models
+# cargando la ruta estatica 
+
+
 
 # Create your models here.
 class Usuario(models.Model):
@@ -10,5 +13,6 @@ class Usuario(models.Model):
     jornada = models.CharField(max_length=10, choices=[('duirno', 'Duirno'), ('vespertino', 'Vespertino')], default='duirno')
     estado_activo = models.BooleanField(default=True)
     contraseña = models.CharField(max_length=20, default='none')
+    imagen = models.ImageField(upload_to='imagenes/', null=True, blank=True)
     def __str__(self):
         return self.nombre

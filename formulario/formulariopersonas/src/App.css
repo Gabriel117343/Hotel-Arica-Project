@@ -136,3 +136,9 @@ div a {
 .estilo-boton {
   background: red;
 }
+.usuario-imagen {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}

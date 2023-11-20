@@ -110,7 +110,11 @@ export const FormAdmin = () => {
     toast.loading('Registrando...', { duration: 2000 })
     setIsBtnDisabled(true) // Desactiva el boton del formulario
     const persona = Object.fromEntries(new FormData(event.target))// crea un objeto con los datos del formulario, -- esto es javascript puro --
-
+    // filtrar la imagen para que no se envie al servidor
+    const imagen = persona.imagen
+    delete persona.imagen
+    console.log(persona)
+    console.log(imagen)
     const usuario = quitarCaracteresEspeciales(persona) // quita los caracteres especiales del nombre y apellido
     // const { rut, nombre, apellido, telefono, correo, contraseña, jornada } = persona// destructuring para obtener los valores del objeto persona
     try {
@@ -118,7 +122,7 @@ export const FormAdmin = () => {
       await validarRut(usuario.rut)
       await validarCorreoRepetido(usuario.correo)
       setTimeout(() => {
-        crearUsuario(usuario)
+        crearUsuario(usuario, imagen)
         limpiarCampos()
       }, 2000)
       window.scrollTo({
@@ -289,6 +293,10 @@ export const FormAdmin = () => {
                 <div className='advertencia'>
                   <p className='d-block text-danger m-0'>{claseContraseña.advertencia}</p>
                 </div>
+              </div>
+              <div className='form-group'>
+                <label htmlFor='imagen'>Imagen</label>
+                <input type='file' accept='.jpg, .jpeg, .png' id='imagen' name='imagen' />
               </div>
               <div className='form-group'>
                 <label htmlFor={`${idFormAdmin}-jornada`}>Jornada</label>

@@ -23,8 +23,13 @@ export const TablaUsuarios = () => {
       })
       if (aceptar.isConfirmed) {
         toast.loading('Eliminando...', { duration: 2000 })
-        setTimeout(() => {
-          eliminarUsuario(id)
+        setTimeout(async () => {
+          const { success, message } = await eliminarUsuario(id)
+          if (success) {
+            toast.success(message)
+          } else {
+            toast.error(message)
+          }
         }, 2000)
       }
     }
