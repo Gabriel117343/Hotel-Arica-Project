@@ -23,7 +23,6 @@ export const UsuarioReducer = (state, action) => { // recibe el estado actual y 
         usuarios: state.usuarios.filter((usuario) => usuario.id !== payload) // filtra los usuarios que no sean el que se quiere eliminar
       }
     case 'UPDATE_USUARIO':
-      console.log('adsf')
       return {
         ...state, // copia el estado actual del componente
         usuarios: state.usuarios.map((usuario) => usuario.id === payload.id ? payload : usuario) // actualiza el usuario  que se modifico y deja los demas igual como estaban antes de la modificacion

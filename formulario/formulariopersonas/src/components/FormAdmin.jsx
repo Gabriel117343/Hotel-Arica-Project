@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast' // alertas para la interfaz
 import debounce from 'lodash/debounce' // para optimizar el rendimiento
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' // icono eye para usar en input contraseña
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-
+import confetti from 'canvas-confetti' // efecto de confetti
 import { UsuarioContext } from '../context/UsuarioContext' // contexto para todo el arbol de componentes de Administrador
 export const FormAdmin = () => {
   // cambiar el boton en true o false con isBtnDisabled
@@ -121,8 +121,15 @@ export const FormAdmin = () => {
       // Realizar la operación asincrónica, por ejemplo, crear un usuario
       await validarRut(usuario.rut)
       await validarCorreoRepetido(usuario.correo)
-      setTimeout(() => {
-        crearUsuario(usuario, imagen)
+      setTimeout(async () => {
+        const { success, message } = await crearUsuario(usuario, imagen)
+        if (success) {
+          toast.success(message, { duration: 4000 })
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
+        } else {
+          toast.error(message, { duration: 4000 })
+        }
+
         limpiarCampos()
       }, 2000)
       window.scrollTo({

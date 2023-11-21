@@ -84,15 +84,23 @@ export const FormEditar = () => {
     try {
       // si el correo seguira siendo el mismo no llamara a la funcion para validar el correo repetido
       if (correo === use.correo) {
-        modificarUsuario(params.id, usuario)
+        const { success, message } = modificarUsuario(params.id, usuario)
+        if (success) {
+          toast.success(message, { duration: 3000 })
+        } else {
+          toast.error(message, { duration: 3000 })
+        }
         navigate('/admin/admin-registro-usuarios')// redirige atras al finalizar el await
         return
       }
 
       await validarCorreoRepetido(correo)
-      modificarUsuario(params.id, usuario)
-      // Muestra un mensaje de éxito
-      toast.success('Usuario editado!', { duration: 3000 })
+      const { success, message } = modificarUsuario(params.id, usuario)
+      if (success) {
+        toast.success(message, { duration: 3000 })
+      } else {
+        toast.error(message, { duration: 3000 })// mensage de error
+      }
       navigate('/admin/admin-registro-usuarios')// redirige atras al finalizar el await
     } catch (error) {
       setIsBtnDisabled(true) // Desactiva el boton del formulario
