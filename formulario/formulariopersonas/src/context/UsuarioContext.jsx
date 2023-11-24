@@ -1,7 +1,6 @@
 import { createContext, useReducer } from 'react'
 import { UsuarioReducer } from './UsuarioReducer'
 import { getAllUsuarios, getUsuario, createUsuario, deleteUsuario, updateUsuario } from '../api/persona.api'
-import { toast } from 'react-hot-toast' // alertas para la interfaz
 
 // 1 Crear el contexto
 export const UsuarioContext = createContext()
@@ -21,6 +20,7 @@ export const UsuarioProvider = ({ children }) => {
         type: 'GET_USUARIOS',
         payload: res.data // guarda los usuarios en el estado
       })
+      return { success: true, message: 'Usuarios obtenidos!' }
     } catch (error) {
       return { success: false, message: 'Hubo un error al obtener los usuarios.' }
     }
