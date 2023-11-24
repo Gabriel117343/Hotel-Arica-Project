@@ -84,7 +84,7 @@ export const FormEditar = () => {
     try {
       // si el correo seguira siendo el mismo no llamara a la funcion para validar el correo repetido
       if (correo === use.correo) {
-        const { success, message } = modificarUsuario(params.id, usuario)
+        const { success, message } = await modificarUsuario(params.id, usuario)
         if (success) {
           toast.success(message, { duration: 3000 })
         } else {
@@ -95,7 +95,7 @@ export const FormEditar = () => {
       }
 
       await validarCorreoRepetido(correo)
-      const { success, message } = modificarUsuario(params.id, usuario)
+      const { success, message } = await modificarUsuario(params.id, usuario)
       if (success) {
         toast.success(message, { duration: 3000 })
       } else {
