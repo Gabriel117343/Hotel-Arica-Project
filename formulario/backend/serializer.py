@@ -6,3 +6,4 @@ class UsuarioSerializer(serializers.ModelSerializer):
         #fields = ('id', 'rut', 'nombre', 'apellido', 'edad')
         #all selecciona todos los campos de Usuario
         fields = '__all__'
+

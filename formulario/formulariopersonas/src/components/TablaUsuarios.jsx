@@ -1,17 +1,13 @@
-import React from 'react'
-
-import { toast } from 'react-hot-toast' // alertas para la interfaz
+import React, { useContext } from 'react'
 import { ValidarUsuarios } from './MostrarTabla'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
-
-import { deleteUsuario } from '../api/persona.api' // funcion Crud
+import { toast } from 'react-hot-toast' // alertas para la interfaz
 import '../app.css'
+import { UsuarioContext } from '../context/UsuarioContext'
 
-import { useUsuarios } from '../hooks/useUsuarios'
 export const TablaUsuarios = () => {
-  const { usuarios, refrescarTabla } = useUsuarios() // consumiendo el contexto
-
+  const { state, eliminarUsuario, getUsuarioSeleccionado } = useContext(UsuarioContext)
   const navigate = useNavigate()
   const borrarPersona = (id) => {
     async function confirmar () {
@@ -26,22 +22,24 @@ export const TablaUsuarios = () => {
         cancelButtonColor: '#d33'
       })
       if (aceptar.isConfirmed) {
-        await deleteUsuario(id)
-        toast.success('Usuario eliminado!')
-        setTimeout(() => {
-          refrescarTabla() // usando la funcion del contexto
-        }, 2500)
-      } else {
-
-        // si es cancelar retorna
+        toast.loading('Eliminando...', { duration: 2000 })
+        setTimeout(async () => {
+          const { success, message } = await eliminarUsuario(id)
+          if (success) {
+            toast.success(message)
+          } else {
+            toast.error(message)
+          }
+        }, 2000)
       }
     }
     confirmar()
   }
 
-  const edicionUsuario = (id) => {
+  const edicionUsuario = async (id) => {
     // Enviara el id del usuario atravez del la url y el estado de la lista de usuarios
-    navigate(`/admin/editar/${id}`, { state: { listaUsuarios: usuarios } })
+    await getUsuarioSeleccionado(id)
+    navigate(`/admin/editar/${id}`)
   }
 
   return (
@@ -58,13 +56,12 @@ export const TablaUsuarios = () => {
 
             <div>
 
-              <ValidarUsuarios listaPersonas={usuarios} borrarPersona={borrarPersona} edicionUsuario={edicionUsuario} />
+              <ValidarUsuarios listaPersonas={state.usuarios} borrarPersona={borrarPersona} edicionUsuario={edicionUsuario} />
 
             </div>
           </div>
 
         </div>
-
       </div>
     </section>
 

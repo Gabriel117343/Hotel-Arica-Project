@@ -12,8 +12,25 @@ export const getAllUsuarios = () => {
 export const getUsuario = (id) => {
   return usuariosApi.get(`/${id}/`)
 }
-export const createUsuario = (usuario) => {
-  return usuariosApi.post('/', usuario)
+export const createUsuario = async (usuario, imagen) => { // es necesario enviar la imagen como parametro para que se pueda enviar al servidor
+  const formData = new FormData() // Crea un objeto de tipo FormData para enviar la imagen al servidor en el formato que el backend lo requiere
+
+  formData.append('rut', usuario.rut)
+  formData.append('nombre', usuario.nombre)
+  formData.append('apellido', usuario.apellido)
+  formData.append('telefono', usuario.telefono)
+  formData.append('correo', usuario.correo)
+  formData.append('contraseña', usuario.contraseña)
+  // Agrega la imagen al objeto FormData
+  formData.append('imagen', imagen)
+  formData.append('jornada', usuario.jornada)
+
+  // Envía los datos al servidor
+  return usuariosApi.post('/', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 export const deleteUsuario = (id) => {
   return usuariosApi.delete(`/${id}`)
