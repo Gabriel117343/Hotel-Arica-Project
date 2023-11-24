@@ -8,7 +8,7 @@ export const UsuarioContext = createContext()
 // contexto para todo el arbol de componentes de Administrador
 
 export const UsuarioProvider = ({ children }) => {
-  const initialState = {
+  const initialState = { // Estado inicial
     usuarios: [],
     usuarioSeleccionado: null
   }
