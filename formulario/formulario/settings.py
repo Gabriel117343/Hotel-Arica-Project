@@ -107,8 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
+# zona horaria santiago chile
+LANGUAGE_CODE = 'es-cl' # esto significa que el idioma es español y el pais es chile y hara que la fecha se muestre en español
 
 TIME_ZONE = 'UTC'
 
@@ -134,4 +134,5 @@ CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
+AUTH_USER_MODEL = 'backend.Usuario'
 

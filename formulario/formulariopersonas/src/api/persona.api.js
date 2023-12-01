@@ -19,8 +19,8 @@ export const createUsuario = async (usuario, imagen) => { // es necesario enviar
   formData.append('nombre', usuario.nombre)
   formData.append('apellido', usuario.apellido)
   formData.append('telefono', usuario.telefono)
-  formData.append('correo', usuario.correo)
-  formData.append('contraseña', usuario.contraseña)
+  formData.append('email', usuario.email)
+  formData.append('password', usuario.password)
   // Agrega la imagen al objeto FormData
   formData.append('imagen', imagen)
   formData.append('jornada', usuario.jornada)

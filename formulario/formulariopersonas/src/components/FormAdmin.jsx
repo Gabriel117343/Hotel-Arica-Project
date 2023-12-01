@@ -86,8 +86,10 @@ export const FormAdmin = () => {
   }
 
   const validarCorreoRepetido = (correo) => {
+    console.log(correo)
     // busca si el correo ya fue registrado con algun usuario
-    const correoValidado = state.usuarios.find(co => co.correo === correo)
+    console.log(state.usuarios)
+    const correoValidado = state.usuarios.find(co => co.email === correo)
     return new Promise((resolve, reject) => {
       if (correoValidado) {
         limpiarCampos()
@@ -120,7 +122,7 @@ export const FormAdmin = () => {
     try {
       // Realizar la operación asincrónica, por ejemplo, crear un usuario
       await validarRut(usuario.rut)
-      await validarCorreoRepetido(usuario.correo)
+      await validarCorreoRepetido(usuario.email)
       setTimeout(async () => {
         const { success, message } = await crearUsuario(usuario, imagen)
         if (success) {
@@ -278,7 +280,7 @@ export const FormAdmin = () => {
                 <label htmlFor={`${idFormAdmin}-correo`}>Correo</label>
                 <input
                   onChange={e => debounce_handleOnChange(e.target.value, claseCorreo, 'correo')} ref={correoRef} type='email' className={`form-control ${claseCorreo.clase}`}
-                  placeholder='Ej: corr.nuevo09@gmail.com' id={`${idFormAdmin}-correo`} name='correo'
+                  placeholder='Ej: corr.nuevo09@gmail.com' id={`${idFormAdmin}-correo`} name='email'
                 />
                 <div className='advertencia'>
                   <p className='d-block text-danger m-0'>{claseCorreo.advertencia}</p>
@@ -288,7 +290,7 @@ export const FormAdmin = () => {
                 <label htmlFor={`${idFormAdmin}-contraseña`}>Contraseña</label>
                 <input
                   onChange={e => debounce_handleOnChange(e.target.value, claseContraseña, 'contraseña')} ref={contraseñaRef} type={mostrarContraseña ? 'text' : 'password'} className={`form-control ${claseContraseña.clase}`}
-                  placeholder='Min. 8 caracteres' id={`${idFormAdmin}-contraseña`} name='contraseña'
+                  placeholder='Min. 8 caracteres' id={`${idFormAdmin}-contraseña`} name='password'
                 />
                 <span className='icon'>
                   <FontAwesomeIcon

@@ -1,5 +1,4 @@
 import { NavbarIndex } from '../views/NavbarIndex'
-
 export const SobreNosotros = () => {
   return (
     <div>

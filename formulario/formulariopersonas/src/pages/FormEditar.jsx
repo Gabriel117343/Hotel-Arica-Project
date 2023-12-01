@@ -51,7 +51,7 @@ export const FormEditar = () => {
 
   const validarCorreoRepetido = (correo) => {
     // busca si el correo ya fue registrado con algun usuario
-    const correoValidado = state.usuarios.find(co => co.correo === correo)
+    const correoValidado = state.usuarios.find(co => co.email === correo)
     return new Promise((resolve, reject) => { // Uso de promesas
       if (correoValidado) {
         // retorna el error
@@ -68,13 +68,19 @@ export const FormEditar = () => {
 
     const usuario = Object.fromEntries(new FormData(event.target)) // obtiene los datos del formulario y los convierte en un objeto
     console.log(usuario)
-    const { rut, nombre, apellido, telefono, correo, contraseña, jornada, estado_activo } = usuario // desestructura el objeto usuario para obtener los datos del usuario
+    const { rut, nombre, apellido, telefono, email, password, jornada, is_active } = usuario // desestructura el objeto usuario para obtener los datos del usuario
 
+    if (usuario.is_active === undefined) {
+      usuario.is_active = false
+    } else {
+      usuario.is_active = true
+    }
+    console.log(usuario.is_active)
     usuario.estado_activo = usuario.estado_activo === 'on' // si el checkbox esta activo sera true si no false
     const use = state.usuarioSeleccionado // usuario buscar son los datos del usuario encontrado
     // Esto sirve para que mantenga el rut original si no se modifica
     // Evitara que de un error donde el rut sea igual al de otro usuario
-    if (use.nombre === nombre && use.apellido === apellido && use.telefono === telefono && use.correo === correo && use.contraseña === contraseña && use.estado_activo === estado_activo && use.jornada === jornada) {
+    if (use.nombre === nombre && use.apellido === apellido && use.telefono === telefono && use.email === email && (use.password === password || password === '') && use.is_active === is_active && use.jornada === jornada) {
       console.log('ambos iguales')
       toast.error('No hubo cambios!', { duration: 3000 })
       navigate('/admin/admin-registro-usuarios')
@@ -83,7 +89,7 @@ export const FormEditar = () => {
 
     try {
       // si el correo seguira siendo el mismo no llamara a la funcion para validar el correo repetido
-      if (correo === use.correo) {
+      if (email === use.email) {
         const { success, message } = await modificarUsuario(params.id, usuario)
         if (success) {
           toast.success(message, { duration: 3000 })
@@ -94,7 +100,7 @@ export const FormEditar = () => {
         return
       }
 
-      await validarCorreoRepetido(correo)
+      await validarCorreoRepetido(email)
       const { success, message } = await modificarUsuario(params.id, usuario)
       if (success) {
         toast.success(message, { duration: 3000 })
@@ -215,7 +221,7 @@ export const FormEditar = () => {
                 <label htmlFor={`${idEditAdmin}-correo`}>Correo</label>
                 <input
                   ref={correoRef} onChange={e => debounce_handleOnChange('correo', e.target.value, claseInput4)} type='email' className={`form-control ${claseInput4.clase}`}
-                  placeholder='Ej: corr.nuevo09@gmail.com' defaultValue={state.usuarioSeleccionado.correo} id={`${idEditAdmin}-correo`} name='correo'
+                  placeholder='Ej: corr.nuevo09@gmail.com' defaultValue={state.usuarioSeleccionado.email} id={`${idEditAdmin}-correo`} name='email'
                 />
 
                 <div className='advertencia'>
@@ -225,8 +231,7 @@ export const FormEditar = () => {
               <div className='form-group contraseña-container'>
                 <label htmlFor={`${idEditAdmin}-contraseña`}>Contraseña</label>
                 <input
-                  ref={contraseñaRef} onChange={e => debounce_handleOnChange('contraseña', e.target.value, claseInput5)} type={mostrarPassword ? 'text' : 'password'} className={`form-control ${claseInput5.clase}`}
-                  defaultValue={state.usuarioSeleccionado.contraseña} id={`${idEditAdmin}-contraseña`} name='contraseña'
+                  ref={contraseñaRef} onChange={e => debounce_handleOnChange('contraseña', e.target.value, claseInput5)} type={mostrarPassword ? 'text' : 'password'} className={`form-control ${claseInput5.clase}`} id={`${idEditAdmin}-contraseña`} name='password'
                 />
                 <span className='icon'>
                   <FontAwesomeIcon
@@ -248,7 +253,7 @@ export const FormEditar = () => {
 
               </div>
               <div className='d-flex mb-3 mt-3'>
-                <input className='form-check-input' onClick={validarEstadoBoton} defaultChecked={state.usuarioSeleccionado.estado_activo} ref={checkRef} type='checkbox' id={`${idEditAdmin}-estado`} name='estado_activo' />
+                <input className='form-check-input' onClick={validarEstadoBoton} defaultChecked={state.usuarioSeleccionado.is_active} ref={checkRef} type='checkbox' id={`${idEditAdmin}-estado`} name='is_active' />
                 <p className='ps-2 m-0'>Usuario Activo</p>
               </div>
               <div className='mt-3 d-flex justify-content-between'>

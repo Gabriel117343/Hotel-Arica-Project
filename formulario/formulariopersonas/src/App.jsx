@@ -6,12 +6,13 @@ import { Index } from './pages/index'
 import { Toaster } from 'react-hot-toast'
 import { Footer } from './views/Footer'
 import { AdminRoutes } from './routes/AdminRoutes'
-
+import { LoginForm } from './components/Login'
 function App () {
   return (
     <BrowserRouter> {/** Tiene que envolver toda la aplicacion BrowserRouter */}
       <Routes>
         <Route path='/' element={<Navigate to='/index' />} />
+        <Route path='/login' element={<LoginForm />} />
         <Route path='/sobre-nosotros' element={<SobreNosotros />} />
         <Route path='/index' element={<Index />} />
         <Route path='*' element={<h1>No Found</h1>} />

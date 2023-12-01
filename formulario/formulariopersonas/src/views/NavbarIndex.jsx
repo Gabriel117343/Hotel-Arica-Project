@@ -15,7 +15,7 @@ export function NavbarIndex () {
           </div>
           <div>
             <Link className='link' to='/admin/admin-registro-usuarios'>Admin Login</Link>
-            <Link className='ms-4 link' to='/index'>User Login</Link>
+            <Link className='ms-4 link' to='/login'>User Login</Link>
           </div>
 
         </div>

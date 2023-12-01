@@ -7,5 +7,6 @@ router.register(r'usuarios', views.UsuarioView, 'usuarios')
 
 urlpatterns = [
     path('datos/v1/', include(router.urls)),
-    path('docs/', include_docs_urls(title="Usuarios Api"))
+    path('docs/', include_docs_urls(title="Usuarios Api")),
+    path('login/', views.login)
 ] 
