@@ -9,7 +9,7 @@ export const UsuarioContext = createContext()
 
 export const UsuarioProvider = ({ children }) => {
   const initialState = { // Estado inicial
-    usuarios: [],
+    usuarios: [], // lista de usuarios
     usuarioSeleccionado: null
   }
   const [state, dispatch] = useReducer(UsuarioReducer, initialState)
@@ -18,23 +18,25 @@ export const UsuarioProvider = ({ children }) => {
       const res = await getAllUsuarios()
       dispatch({
         type: 'GET_USUARIOS',
-        payload: res.data // guarda los usuarios en el estado
+        payload: res.data.data // guarda los usuarios en el estado
       })
       return { success: true, message: 'Usuarios obtenidos!' }
-    } catch (error) {
+    } catch (res) {
+      // throw error del res.data.message
       return { success: false, message: 'Hubo un error al obtener los usuarios.' }
     }
   }
   const getUsuarioSeleccionado = async (id) => {
     const res = await getUsuario(id)
+
     dispatch({
       type: 'GET_USUARIO',
       payload: res.data // guarda el usuario seleccionado en el estado usuarioSeleccionado
     })
   }
-  const crearUsuario = async (usuarios, imagen) => {
+  const crearUsuario = async (usuario) => {
     try {
-      const res = await createUsuario(usuarios, imagen) // espera a que se cree el usuario para continuar con la ejecucion del codigo y no se salte el toast de exito
+      const res = await createUsuario(usuario) // espera a que se cree el usuario para continuar con la ejecucion del codigo y no se salte el toast de exito
       dispatch({
         type: 'CREATE_USUARIO',
         payload: res.data // agrega el nuevo usuario al arreglo de usuarios
@@ -44,16 +46,18 @@ export const UsuarioProvider = ({ children }) => {
       return { success: false, message: 'Hubo un error al crear el usuario.' }
     }
   }
+
   const eliminarUsuario = async (id) => {
     try {
-      await deleteUsuario(id)
+      // capturando la respuesta
+      const res = await deleteUsuario(id)
       dispatch({
         type: 'DELETE_USUARIO',
         payload: id // filtra los usuarios que no sean el que se quiere eliminar
       })
-      return { success: true, message: 'Usuario eliminado!' }
+      return { success: true, message: res.data.message }
     } catch (error) {
-      return { success: false, message: 'Hubo un error al eliminar el usuario.' }
+      return { success: false, message: 'Hubo un error al eliminar el usuario' }
     }
   } // en mvc este es el controlador que se encarga de eliminar el usuario de la base de datos y de actualizar el estado de la lista de usuarios
 

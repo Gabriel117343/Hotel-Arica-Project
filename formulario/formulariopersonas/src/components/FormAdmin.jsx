@@ -70,7 +70,6 @@ export const FormAdmin = () => {
   }
   const validarRut = (rut) => {
     // Retorna el resultado de la promesa resolve o reject
-
     return new Promise((resolve, reject) => {
       const rutValidado = state.usuarios.find(pe => pe.rut === rut)
 
@@ -86,9 +85,7 @@ export const FormAdmin = () => {
   }
 
   const validarCorreoRepetido = (correo) => {
-    console.log(correo)
     // busca si el correo ya fue registrado con algun usuario
-    console.log(state.usuarios)
     const correoValidado = state.usuarios.find(co => co.email === correo)
     return new Promise((resolve, reject) => {
       if (correoValidado) {
@@ -111,20 +108,16 @@ export const FormAdmin = () => {
     event.preventDefault()
     toast.loading('Registrando...', { duration: 2000 })
     setIsBtnDisabled(true) // Desactiva el boton del formulario
-    const persona = Object.fromEntries(new FormData(event.target))// crea un objeto con los datos del formulario, -- esto es javascript puro --
+    const form = Object.fromEntries(new FormData(event.target))// crea un objeto con los datos del formulario, -- esto es javascript puro --
     // filtrar la imagen para que no se envie al servidor
-    const imagen = persona.imagen
-    delete persona.imagen
-    console.log(persona)
-    console.log(imagen)
-    const usuario = quitarCaracteresEspeciales(persona) // quita los caracteres especiales del nombre y apellido
+    const usuario = quitarCaracteresEspeciales(form) // quita los caracteres especiales del nombre y apellido
     // const { rut, nombre, apellido, telefono, correo, contraseña, jornada } = persona// destructuring para obtener los valores del objeto persona
     try {
       // Realizar la operación asincrónica, por ejemplo, crear un usuario
       await validarRut(usuario.rut)
       await validarCorreoRepetido(usuario.email)
       setTimeout(async () => {
-        const { success, message } = await crearUsuario(usuario, imagen)
+        const { success, message } = await crearUsuario(usuario)
         if (success) {
           toast.success(message, { duration: 4000 })
           confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
