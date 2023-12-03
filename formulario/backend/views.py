@@ -1,20 +1,22 @@
 from cmath import e
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from .serializer import UsuarioSerializer
 from .models import Usuario
 # Create your views here.
-from django.contrib.auth import authenticate
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.utils.decorators import method_decorator
 from django.contrib.auth.hashers import make_password
+from django.middleware.csrf import get_token
 from rest_framework.views import APIView
 from .serializer import UsuarioSerializer
 #importamos el status para darle un estado a la respuesta
 from rest_framework import status
 from rest_framework.response import Response
+import json
 
 class UsuarioCreateView(APIView): # este método es para crear un usuario con contraseña encriptada si es que se envía en la petición post desde la api en React
 
@@ -25,31 +27,35 @@ class UsuarioCreateView(APIView): # este método es para crear un usuario con co
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED) # si se crea el usuario, se retorna un estado 201 (creado) y los datos del usuario creado
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-@csrf_exempt # para que no pida el token de seguridad en la petición post desde la api en React
-def eliminar(request, id): # este método es para eliminar un usuario desde la api en React
-    if request.method == 'DELETE':
-        usuario = Usuario.objects.get(id=id)
-        usuario.delete()
-        return JsonResponse({'message': 'Se ha eliminado Exitosamente'}, status=200)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
+@ensure_csrf_cookie # este método es para obtener el token csrf desde la api en React
+def get_csrf_token(request):
+    return JsonResponse({'csrftoken': get_token(request)})
+@csrf_exempt
 def login(request): # este método es para logearse desde la api en React
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+        csrf_token = request.META.get('HTTP_X_CSRFTOKEN')  # Añade esta línea
+        # verificamos que el token csrf sea válido
+        if csrf_token != get_token(request):
+            return JsonResponse({'message': 'Token CSRF inválido'}, status=400)
         user = authenticate(request, email=email, password=password)
-        print('tipo: ', user)
+    
         if user is not None:
             auth_login(request, user)
-            return JsonResponse({'message': 'Se ha logeado Exitosamente', # si se logea correctamente, se retorna un estado 200 (ok) y los datos del usuario logeado
-                                 'nombre': user.nombre,
-                                 'rol': user.rol,
-                                 
-                                 }, status=200)
+            return JsonResponse({'message': 'Se ha logeado Exitosamente', 'usuario':{'nombre':user.nombre, 'rol': user.rol}}, status=200)
         else:
             return JsonResponse({'error': 'Credenciales Invaidas'}, status=400)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
+@csrf_exempt
+def logout_view(request):
+    if request.method == 'POST':
+        auth_logout(request)
+        return JsonResponse({'message': 'Se ha deslogueado Exitosamente'}, status=200)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 class UsuarioView(viewsets.ModelViewSet): # este método es para listar, crear, actualizar y eliminar usuarios desde la api en React
     serializer_class = UsuarioSerializer #Esto indica que UsuarioSerializer se utilizará para serializar y deserializar instancias del modelo Usuario.
     queryset = Usuario.objects.all() # Esto indica que todas las instancias del modelo Usuario son el conjunto de datos sobre el que operará esta vista.

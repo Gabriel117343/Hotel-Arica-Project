@@ -126,13 +126,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
+CORS_ALLOW_CREDENTIALS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #cors autorizacion!
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:5173",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 AUTH_USER_MODEL = 'backend.Usuario'
+CSRF_COOKIE_DOMAIN = 'localhost' # esto es para que el token csrf se envíe a la api en React desde el servidor de Django
 
+CSRF_COOKIE_NAME = "csrftoken" # esto es para que el token csrf se envíe a la api en React desde el servidor de Django
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN" # esto es para que el token csrf se envíe a la api en React desde el servidor de Django
+CSRF_USE_SESSIONS = False # esto es para que el token csrf se envíe a la api en React desde el servidor de Django

@@ -8,5 +8,7 @@ router.register(r'usuarios', views.UsuarioView, 'usuarios')
 urlpatterns = [
     path('datos/v1/', include(router.urls)),
     path('docs/', include_docs_urls(title="Usuarios Api")),
-    path('login/', views.login)
+    path('csrf/', views.get_csrf_token),
+    path('login/', views.login), 
+    path('logout/', views.logout_view),
 ] 
